@@ -47,7 +47,7 @@ class Background extends StatelessWidget {
               flex: 19,
               child: Container(
                 child: SvgPicture.asset(
-                  "res/background_waves_top.svg",
+                  "res/background/background_waves_top.svg",
                   width: width * 1.27,
                 ),
               ),
@@ -69,7 +69,7 @@ class Background extends StatelessWidget {
               flex: 17,
               child: Container(
                 child: SvgPicture.asset(
-                  "res/background_waves_center.svg",
+                  "res/background/background_waves_center.svg",
                   width: width * 1.33,
                 ),
               ),
@@ -91,7 +91,7 @@ class Background extends StatelessWidget {
               flex: 13,
               child: Container(
                 child: SvgPicture.asset(
-                  "res/background_waves_bottom.svg",
+                  "res/background/background_waves_bottom.svg",
                   width: width,
                 ),
               ),
