@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "900044716055",
+    "firebase_url": "https://tiksiweather-default-rtdb.europe-west1.firebasedatabase.app",
+    "project_id": "tiksiweather",
+    "storage_bucket": "tiksiweather.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:900044716055:android:1cf7fc027a567a02930452",
+        "android_client_info": {
+          "package_name": "com.ArtemOslopov.tiksi_weather"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "900044716055-i6vdj6bck2oj04skc9je37jkdk9tt6d7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ArtemOslopov.tiksi_weather",
+            "certificate_hash": "7ece8e329d438fd1863a760825b8b9a5012fa74e"
+          }
+        },
+        {
+          "client_id": "900044716055-on6mhcvdo3otsctbuvnoa9ke2ug84075.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA5YVgWtHO-38Q5qkTPfiPsLNmo75UpN-A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "900044716055-on6mhcvdo3otsctbuvnoa9ke2ug84075.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
