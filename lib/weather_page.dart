@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:tiksi_weather/components/date_widget.dart';
+import 'package:tiksi_weather/components/weather_icon.dart';
 import 'components/background.dart';
 
 class WeatherPage extends StatefulWidget {
@@ -59,6 +60,10 @@ getContent(double width, double height) {
             ),
           ),
         ),
+      ),
+      Container(
+        margin: EdgeInsets.only(top: height * 0.034),
+        child: WeatherIcon(icon: "icon_rain_day", size: width * 0.45),
       ),
     ],
   );
