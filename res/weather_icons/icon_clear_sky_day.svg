@@ -1,14 +1,5 @@
 <svg width="70" height="68" viewBox="0 0 70 68"
     xmlns="http://www.w3.org/2000/svg">
-    <g clip-path="url(#clip0)">
-        <g clip-path="url(#clip1)">
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M34.857 58.5137L24.2244 66.4723L20.2954 53.7773L7.02052 53.9596L11.2959 41.3773L0.449219 33.7137L11.2959 26.0501L7.02052 13.4678L20.2954 13.6501L24.2244 0.955078L34.857 8.91369L45.4896 0.955078L49.4186 13.6501L62.6935 13.4678L58.4181 26.0501L69.2648 33.7137L58.4181 41.3773L62.6935 53.9596L49.4186 53.7773L45.4896 66.4723L34.857 58.5137Z" fill="#FCC02E"/>
-            <path fill-rule="evenodd" clip-rule="evenodd" d="M34.857 58.5137L24.2244 66.4723L20.2954 53.7773L7.02052 53.9596L11.2959 41.3773L0.449219 33.7137L11.2959 26.0501L7.02052 13.4678L20.2954 13.6501L24.2244 0.955078L34.857 8.91369L45.4896 0.955078L49.4186 13.6501L62.6935 13.4678L58.4181 26.0501L69.2648 33.7137L58.4181 41.3773L62.6935 53.9596L49.4186 53.7773L45.4896 66.4723L34.857 58.5137Z" fill="url(#paint0_linear)" fill-opacity="0.3" style="mix-blend-mode:overlay"/>
-            <g filter="url(#filter0_d)">
-                <ellipse cx="34.8571" cy="33.7136" rx="18.9836" ry="19.0038" fill="#FEE6AC"/>
-            </g>
-        </g>
-    </g>
     <defs>
         <filter id="filter0_d" x="7.87354" y="10.7097" width="53.9672" height="54.0077" filterUnits="userSpaceOnUse" color-interpolation-filters="sRGB">
             <feFlood flood-opacity="0" result="BackgroundImageFix"/>
@@ -30,4 +21,13 @@
             <rect width="69" height="67" fill="white" transform="translate(0.449219 0.315674)"/>
         </clipPath>
     </defs>
+    <g clip-path="url(#clip0)">
+        <g clip-path="url(#clip1)">
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M34.857 58.5137L24.2244 66.4723L20.2954 53.7773L7.02052 53.9596L11.2959 41.3773L0.449219 33.7137L11.2959 26.0501L7.02052 13.4678L20.2954 13.6501L24.2244 0.955078L34.857 8.91369L45.4896 0.955078L49.4186 13.6501L62.6935 13.4678L58.4181 26.0501L69.2648 33.7137L58.4181 41.3773L62.6935 53.9596L49.4186 53.7773L45.4896 66.4723L34.857 58.5137Z" fill="#FCC02E"/>
+            <path fill-rule="evenodd" clip-rule="evenodd" d="M34.857 58.5137L24.2244 66.4723L20.2954 53.7773L7.02052 53.9596L11.2959 41.3773L0.449219 33.7137L11.2959 26.0501L7.02052 13.4678L20.2954 13.6501L24.2244 0.955078L34.857 8.91369L45.4896 0.955078L49.4186 13.6501L62.6935 13.4678L58.4181 26.0501L69.2648 33.7137L58.4181 41.3773L62.6935 53.9596L49.4186 53.7773L45.4896 66.4723L34.857 58.5137Z" fill="url(#paint0_linear)" fill-opacity="0.3" style="mix-blend-mode:overlay"/>
+            <g filter="url(#filter0_d)">
+                <ellipse cx="34.8571" cy="33.7136" rx="18.9836" ry="19.0038" fill="#FEE6AC"/>
+            </g>
+        </g>
+    </g>
 </svg>

@@ -14,6 +14,7 @@ class WeatherIcon extends StatelessWidget {
       child: SvgPicture.asset(
         iconPath,
         width: size,
+        height: size,
       ),
     );
   }
