@@ -91,7 +91,7 @@ class DateWidget extends StatelessWidget {
                 onTap: () => rightIconClick(),
                 borderRadius: BorderRadius.circular(24.0),
                 child: Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: EdgeInsets.all(5.0),
                   child: Icon(
                     changeMode ? Icons.save_outlined : Icons.create_outlined,
                     size: 24,

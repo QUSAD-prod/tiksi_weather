@@ -43,6 +43,7 @@ class _WeatherPageState extends State<WeatherPage> {
     "windDirection": "—",
     "windSpeed": "—",
     "windImpulses": "—",
+    "warning": "",
   };
 
   bool changeMode = false;
@@ -58,6 +59,9 @@ class _WeatherPageState extends State<WeatherPage> {
   TextEditingController tempDayController = TextEditingController();
   TextEditingController tempNightController = TextEditingController();
   TextEditingController errorController = TextEditingController();
+
+  double mainHeight = 0;
+
   @override
   void initState() {
     getWeather();
@@ -68,11 +72,19 @@ class _WeatherPageState extends State<WeatherPage> {
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
     double height = MediaQuery.of(context).size.height;
+    if (mainHeight == 0) {
+      mainHeight = height;
+    } else if (mainHeight < height) {
+      mainHeight = height;
+    }
     return Scaffold(
+      resizeToAvoidBottomInset: false,
       body: Container(
         child: Stack(
           children: [
-            Background(),
+            Background(
+              height: mainHeight,
+            ),
             getContent(width, height),
             authPage
                 ? getAuthPage(width, height)
@@ -277,6 +289,7 @@ class _WeatherPageState extends State<WeatherPage> {
               "windDirection": "—",
               "windSpeed": "—",
               "windImpulses": "—",
+              "warning": "",
             },
             getWeather(),
           });
@@ -322,14 +335,8 @@ class _WeatherPageState extends State<WeatherPage> {
   pencilClick() {
     if (firebase.checkAdmin()) {
       if (weather["tempDay"] == "—") {
-        changeModeIcon = "icon_clear_sky_day";
-        textController.clear();
-        windDirectionController.clear();
-        windSpeedController.clear();
-        windImpulsesController.clear();
-        tempDayController.clear();
-        tempNightController.clear();
-        errorController.clear();
+        getSnackBar(
+            "Невозможно редактировать.\nПогода на это число не найдена", true);
       } else {
         changeModeIcon = weather["iconName"];
         textController = TextEditingController.fromValue(
@@ -348,11 +355,11 @@ class _WeatherPageState extends State<WeatherPage> {
             weather["warning"] == null
                 ? TextEditingValue.empty
                 : TextEditingValue(text: weather["warning"]));
+        setState(() {
+          changeMode = true;
+          newWeather = false;
+        });
       }
-      setState(() {
-        changeMode = true;
-        newWeather = false;
-      });
     } else
       setState(() {
         authPage = true;
@@ -367,7 +374,30 @@ class _WeatherPageState extends State<WeatherPage> {
     });
   }
 
-  saveClick() {}
+  saveClick() {
+    Map weatherForSave = {
+      "iconName": changeModeIcon,
+      "tempDay": tempDayController.text,
+      "tempNight": tempNightController.text,
+      "text": textController.text,
+      "warning": errorController.text,
+      "windDirection": windDirectionController.text,
+      "windImpulses": windImpulsesController.text,
+      "windSpeed": windSpeedController.text,
+    };
+    firebase.db
+        .child("weather")
+        .child(DateFormat('dd-MM-yyyy').format(currentDate))
+        .set(weatherForSave)
+        .whenComplete(() => {
+              firebase.pushNotification(newWeather),
+              setState(() => {
+                    this.changeMode = false,
+                    this.newWeather = false,
+                    getWeather()
+                  })
+            });
+  }
 
   getWeather() async {
     Map weather = await firebase.getWeather(
@@ -375,19 +405,19 @@ class _WeatherPageState extends State<WeatherPage> {
     );
     print(weather["result"]);
     if (weather["result"] == "ok") {
-      if (weather["tempDay"] != null &&
-          weather["text"] != null &&
-          weather["iconName"] != null) {
-        if (weather["tempNight"] == null) {
+      if (weather["tempDay"] != "" &&
+          weather["text"] != "" &&
+          weather["iconName"] != "") {
+        if (weather["tempNight"] == "") {
           weather.update("tempNight", (value) => "—");
         }
-        if (weather["windSpeed"] == null) {
+        if (weather["windSpeed"] == "") {
           weather.update("windSpeed", (value) => "—");
         }
-        if (weather["windDirection"] == null) {
+        if (weather["windDirection"] == "") {
           weather.update("windDirection", (value) => "—");
         }
-        if (weather["windImpulses"] == null) {
+        if (weather["windImpulses"] == "") {
           weather.update("windImpulses", (value) => "—");
         }
         setState(() {
@@ -446,35 +476,104 @@ class _WeatherPageState extends State<WeatherPage> {
             Container(
               child: Column(
                 children: [
+                  Container(
+                    height: 12.0,
+                  ),
                   Row(
                     children: [
-                      Container(
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(16.0),
-                          color: Color(0xFF3f8ae0),
-                        ),
-                        child: Material(
-                          color: Colors.transparent,
-                          child: InkWell(
-                            onTap: () => {},
-                            borderRadius: BorderRadius.circular(16.0),
-                            child: Container(
-                              height: width * 0.3,
-                              width: width * 0.3,
-                              padding: EdgeInsets.all(8.0),
-                              child: WeatherIcon(
-                                  icon: "icon_broken_clouds_day",
-                                  size: width * 0.25),
-                            ),
-                          ),
-                        ),
-                      ),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_broken_clouds_day"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_broken_clouds_night"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_clear_sky_day"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_clear_sky_night"),
+                      Expanded(child: Container()),
                     ],
+                  ),
+                  Container(
+                    height: 12.0,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_few_clouds_day"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_few_clouds_night"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_mist_day"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_rain_day"),
+                      Expanded(child: Container()),
+                    ],
+                  ),
+                  Container(
+                    height: 12.0,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_rain_night"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_scattered_clouds_night"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_shower_rain_day"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_shower_rain_night"),
+                      Expanded(child: Container()),
+                    ],
+                  ),
+                  Container(
+                    height: 12.0,
+                  ),
+                  Row(
+                    children: [
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_snow_day"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_thunderstorm_day"),
+                      Expanded(child: Container()),
+                      changeIconWeather(width, "icon_thunderstorm_night"),
+                      Expanded(child: Container()),
+                      Container(width: width * 0.22),
+                      Expanded(child: Container()),
+                    ],
+                  ),
+                  Container(
+                    height: 24.0,
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  changeIconWeather(double width, String name) {
+    return Container(
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(16.0),
+        color: Color(0xFF3f8ae0),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () => setState(() {
+            this.changeModeIcon = name;
+            Navigator.pop(context);
+          }),
+          borderRadius: BorderRadius.circular(16.0),
+          child: Container(
+            height: width * 0.22,
+            width: width * 0.22,
+            padding: EdgeInsets.all(12.0),
+            child: WeatherIcon(
+              icon: name,
+            ),
+          ),
         ),
       ),
     );
@@ -785,7 +884,8 @@ class CollapsingList extends StatelessWidget {
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(
-                                                        100.0),
+                                                  100.0,
+                                                ),
                                                 color: Colors.white,
                                               ),
                                               child: Icon(
@@ -864,7 +964,7 @@ class CollapsingList extends StatelessWidget {
                                         ],
                                       ),
                                     )
-                                  : weather["warning"] != null
+                                  : weather["warning"] != ""
                                       ? Container(
                                           margin: EdgeInsets.only(
                                               top: height * 0.015),
