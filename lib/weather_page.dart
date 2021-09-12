@@ -111,7 +111,7 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 
-  functionSignIn() async {
+  void functionSignIn() async {
     FocusManager.instance.primaryFocus?.unfocus();
     if (this._loginController.text.trim() != "" &&
         this._passwordController.text.trim() != "") {
@@ -143,7 +143,7 @@ class _WeatherPageState extends State<WeatherPage> {
       if (isOk) {
         _loginController.clear();
         _passwordController.clear();
-        setState(() => authPage = false);
+        setState(() => {authPage = false});
       } else {
         errorEmail = true;
         errorPass = true;
@@ -175,80 +175,81 @@ class _WeatherPageState extends State<WeatherPage> {
             ),
           ),
         ),
-        Center(
-          child: Container(
-            width: width * 0.85,
-            height: height * 0.5,
-            padding: EdgeInsets.symmetric(
-              horizontal: width * 0.045,
-              vertical: height * 0.02,
-            ),
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(24.0),
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                Text(
-                  "Вход в аккаунт",
-                  style: TextStyle(
-                    color: Color(0xFF242424),
-                    fontSize: 32,
-                    fontWeight: FontWeight.w700,
+        Container(
+          margin: EdgeInsets.only(bottom: height * 0.15),
+          child: Center(
+            child: Container(
+              width: width * 0.85,
+              height: height * 0.5,
+              padding: EdgeInsets.symmetric(
+                horizontal: width * 0.045,
+                vertical: height * 0.02,
+              ),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(24.0),
+              ),
+              child: Column(
+                mainAxisSize: MainAxisSize.max,
+                children: [
+                  Text(
+                    "Вход в аккаунт",
+                    style: TextStyle(
+                      color: Color(0xFF242424),
+                      fontSize: 32,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
-                ),
-                Text(
-                  "(только для админов)",
-                  style: TextStyle(
-                    color: Color(0xFF242424).withOpacity(0.6),
-                    fontSize: 16,
-                    fontWeight: FontWeight.w400,
+                  Text(
+                    "(только для админов)",
+                    style: TextStyle(
+                      color: Color(0xFF242424).withOpacity(0.6),
+                      fontSize: 16,
+                      fontWeight: FontWeight.w400,
+                    ),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: height * 0.03),
-                  child: Input(
-                    hint: "E-mail",
-                    controller: _loginController,
-                    isPass: false,
-                    keyboardType: TextInputType.emailAddress,
-                    errorEnabled: errorEmail,
+                  Container(
+                    margin: EdgeInsets.only(top: height * 0.03),
+                    child: Input(
+                      hint: "E-mail",
+                      controller: _loginController,
+                      isPass: false,
+                      keyboardType: TextInputType.emailAddress,
+                      errorEnabled: errorEmail,
+                    ),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: height * 0.02),
-                  child: Input(
-                    hint: "Пароль",
-                    controller: _passwordController,
-                    isPass: true,
-                    keyboardType: TextInputType.visiblePassword,
-                    maxLenght: 24,
-                    autocorrect: false,
-                    errorEnabled: errorPass,
+                  Container(
+                    margin: EdgeInsets.only(top: height * 0.02),
+                    child: Input(
+                      hint: "Пароль",
+                      controller: _passwordController,
+                      isPass: true,
+                      keyboardType: TextInputType.visiblePassword,
+                      maxLenght: 24,
+                      autocorrect: false,
+                      errorEnabled: errorPass,
+                    ),
                   ),
-                ),
-                Expanded(child: Container(), flex: 5),
-                Container(
-                  margin: EdgeInsets.only(top: height * 0.015),
-                  child: VkButton(
-                    onClick: () => functionSignIn(),
-                    text: "Войти",
-                    mode: ButtonMode.primary,
+                  Expanded(child: Container(), flex: 5),
+                  Container(
+                    margin: EdgeInsets.only(top: height * 0.015),
+                    child: VkButton(
+                      onClick: () => functionSignIn(),
+                      text: "Войти",
+                      mode: ButtonMode.primary,
+                    ),
                   ),
-                ),
-                Container(
-                  margin: EdgeInsets.only(top: height * 0.015),
-                  child: VkButton(
-                    onClick: () => {
-                      //firebase.resetPassword(),
-                    },
-                    text: "Восстановить пароль",
-                    mode: ButtonMode.outlined,
+                  Container(
+                    margin: EdgeInsets.only(top: height * 0.015),
+                    child: VkButton(
+                      onClick: () => resetPass(height),
+                      text: "Восстановить пароль",
+                      mode: ButtonMode.outlined,
+                    ),
                   ),
-                ),
-                Expanded(child: Container(), flex: 1),
-              ],
+                  Expanded(child: Container(), flex: 1),
+                ],
+              ),
             ),
           ),
         ),
@@ -256,12 +257,74 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 
+  void resetPass(double height) {
+    showBarModalBottomSheet(
+      context: context,
+      topControl: Container(),
+      builder: (context) => Scaffold(
+        resizeToAvoidBottomInset: false,
+        body: Column(
+          children: [
+            AppBar(
+              title: Text(
+                "Восстановление пароля",
+                style: TextStyle(color: Colors.black, fontSize: 16),
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                top: height * 0.03,
+                left: 16,
+                right: 16,
+              ),
+              child: Input(
+                hint: "E-mail",
+                controller: _loginController,
+                isPass: false,
+                keyboardType: TextInputType.emailAddress,
+              ),
+            ),
+            Container(
+              margin: EdgeInsets.only(
+                top: height * 0.015,
+                left: 16,
+                right: 16,
+                bottom: height * 0.4,
+              ),
+              child: VkButton(
+                onClick: () => checkEmailForPassReset(),
+                text: "Восстановить пароль",
+                mode: ButtonMode.outlined,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void checkEmailForPassReset() async {
+    FocusScope.of(context).requestFocus(new FocusNode());
+    if (_loginController.text.isNotEmpty) {
+      String result = await firebase.resetPassword(_loginController.text);
+      if (result == "ok") {
+        getSnackBar("Письмо для сброса пароля отправлено на почту", false);
+        Navigator.pop(context);
+      } else {
+        getSnackBar("Ошибка отправки письма для сброса пароля", true);
+        _loginController.clear();
+      }
+    } else {
+      getSnackBar("Пустое поле", true);
+    }
+  }
+
   void changeDate() async {
     DateTime? temp = await showDatePicker(
       context: context,
       initialDate: currentDate,
       currentDate: DateTime.now(),
-      firstDate: DateTime(2021, 8, 23),
+      firstDate: DateTime(2021, 9, 10),
       lastDate: DateTime.now().add(Duration(days: 1)),
       helpText: "Прогноз на ",
       builder: (BuildContext context, Widget? child) {
@@ -375,28 +438,34 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   saveClick() {
-    Map weatherForSave = {
-      "iconName": changeModeIcon,
-      "tempDay": tempDayController.text,
-      "tempNight": tempNightController.text,
-      "text": textController.text,
-      "warning": errorController.text,
-      "windDirection": windDirectionController.text,
-      "windImpulses": windImpulsesController.text,
-      "windSpeed": windSpeedController.text,
-    };
-    firebase.db
-        .child("weather")
-        .child(DateFormat('dd-MM-yyyy').format(currentDate))
-        .set(weatherForSave)
-        .whenComplete(() => {
+    if (tempDayController.text != "" && textController.text != "") {
+      Map weatherForSave = {
+        "iconName": changeModeIcon,
+        "tempDay": tempDayController.text,
+        "tempNight": tempNightController.text,
+        "text": textController.text,
+        "warning": errorController.text,
+        "windDirection": windDirectionController.text,
+        "windImpulses": windImpulsesController.text,
+        "windSpeed": windSpeedController.text,
+      };
+      firebase.db
+          .child("weather")
+          .child(DateFormat('dd-MM-yyyy').format(currentDate))
+          .set(weatherForSave)
+          .whenComplete(
+            () => {
               firebase.pushNotification(newWeather),
               setState(() => {
                     this.changeMode = false,
                     this.newWeather = false,
                     getWeather()
                   })
-            });
+            },
+          );
+    } else {
+      getSnackBar("Не заполнены обязательные поля", true);
+    }
   }
 
   getWeather() async {
@@ -459,10 +528,17 @@ class _WeatherPageState extends State<WeatherPage> {
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
   }
 
-  changeIcon(double width) {
+  changeIcon(double width, double height) {
     showBarModalBottomSheet(
       context: context,
-      topControl: Container(),
+      topControl: Container(
+        height: height * 0.007,
+        width: width * 0.128,
+        decoration: BoxDecoration(
+          color: Color(0xFFD9DBE9),
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+      ),
       builder: (context) => Container(
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -589,7 +665,7 @@ class _WeatherPageState extends State<WeatherPage> {
             text: DateFormat('dd.MM.yyyy').format(currentDate),
             height: height,
             width: width,
-            onCenterClick: () => changeDate(),
+            onCenterClick: () => changeMode ? () => {} : changeDate(),
             leftIconClick: () => changeMode ? exitClick() : plusClick(),
             rightIconClick: () => changeMode ? saveClick() : pencilClick(),
             changeMode: changeMode,
@@ -852,7 +928,7 @@ class CollapsingList extends StatelessWidget {
                           child: Material(
                             color: Colors.transparent,
                             child: InkWell(
-                              onTap: () => changeIcon(width),
+                              onTap: () => changeIcon(width, height),
                               borderRadius: BorderRadius.circular(16.0),
                               child: Container(
                                 height: width * 0.32,
