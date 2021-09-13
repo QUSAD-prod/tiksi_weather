@@ -64,6 +64,30 @@ class Api {
       } catch (e) {
         print(e);
       }
+    } else {
+      try {
+        var response = await http.post(
+          Uri.parse('https://fcm.googleapis.com/fcm/send'),
+          headers: <String, String>{
+            'Content-Type': 'application/json; charset=UTF-8',
+            'Authorization':
+                'key=AAAA0Y7YeBc:APA91bFFiiwmQNNW1T7Pr3d_bKyrNoXoefLcysN0R_K9jV2DXWNqgQByjD6HwEf36k8TAYQBPPrCGdf0GYq8e0cTpoZ_jHlbLm6rO2Qtul9rd6pa1JyviDmkgxbex-ubmKavsJH19AoO'
+          },
+          body: jsonEncode({
+            "to": "/topics/weather",
+            "notification": {
+              "title": "TiksiWeather",
+              "body": "Прогноз погоды обновлён"
+            },
+            "direct_boot_ok": true
+          }),
+        );
+        print("RESPONSE STATUS: " + response.statusCode.toString());
+        print("RESPONSE REQUEST: " + response.request.toString());
+        print("RESPONSE HEADERS: " + response.headers.toString());
+      } catch (e) {
+        print(e);
+      }
     }
   }
 
