@@ -70,7 +70,7 @@ class DateWidget extends StatelessWidget {
                     "Прогноз на " + text,
                     style: TextStyle(
                       color: Colors.white.withOpacity(0.9),
-                      fontSize: 14,
+                      fontSize: height * 0.019,
                       fontWeight: FontWeight.w600,
                     ),
                   ),

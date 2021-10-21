@@ -32,6 +32,8 @@ if (keystorePropertiesFile.exists()) {
    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
 }
 
+apply plugin: 'com.google.gms.google-services'  // Google Services plugin
+
 android {
     compileSdkVersion 30
 
@@ -41,7 +43,7 @@ android {
 
     defaultConfig {
         applicationId "com.ArtemOslopov.tiksi_weather"
-        minSdkVersion 23
+        minSdkVersion 21
         targetSdkVersion 30
         multiDexEnabled true
         versionCode flutterVersionCode.toInteger()
@@ -74,4 +76,5 @@ flutter {
 dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation 'com.google.android.gms:play-services-ads:20.4.0'
 }

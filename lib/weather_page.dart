@@ -2,6 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
 import 'package:modal_bottom_sheet/modal_bottom_sheet.dart';
 import 'package:tiksi_weather/api.dart';
@@ -17,7 +18,9 @@ class WeatherPage extends StatefulWidget {
   final Api firebase;
   WeatherPage({required this.firebase});
   @override
-  _WeatherPageState createState() => _WeatherPageState(firebase: firebase);
+  _WeatherPageState createState() => _WeatherPageState(
+        firebase: firebase,
+      );
 }
 
 class _WeatherPageState extends State<WeatherPage> {
@@ -61,11 +64,18 @@ class _WeatherPageState extends State<WeatherPage> {
   TextEditingController errorController = TextEditingController();
 
   double mainHeight = 0;
+  BannerAd myBanner = BannerAd(
+    adUnitId: 'ca-app-pub-9786536863361967/1658844912',
+    size: AdSize.banner,
+    request: AdRequest(),
+    listener: BannerAdListener(),
+  );
 
   @override
   void initState() {
-    getWeather();
     super.initState();
+    getWeather();
+    myBanner.load();
   }
 
   @override
@@ -85,7 +95,7 @@ class _WeatherPageState extends State<WeatherPage> {
             Background(
               height: mainHeight,
             ),
-            getContent(width, height),
+            getContent(width, height, myBanner),
             authPage
                 ? getAuthPage(width, height)
                 : Container(width: 0, height: 0),
@@ -196,15 +206,16 @@ class _WeatherPageState extends State<WeatherPage> {
                     "Вход в аккаунт",
                     style: TextStyle(
                       color: Color(0xFF242424),
-                      fontSize: 32,
+                      fontSize: height * 0.035,
                       fontWeight: FontWeight.w700,
                     ),
+                    textAlign: TextAlign.center,
                   ),
                   Text(
                     "(только для админов)",
                     style: TextStyle(
                       color: Color(0xFF242424).withOpacity(0.6),
-                      fontSize: 16,
+                      fontSize: height * 0.02,
                       fontWeight: FontWeight.w400,
                     ),
                   ),
@@ -268,7 +279,10 @@ class _WeatherPageState extends State<WeatherPage> {
             AppBar(
               title: Text(
                 "Восстановление пароля",
-                style: TextStyle(color: Colors.black, fontSize: 16),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontSize: height * 0.02,
+                ),
               ),
             ),
             Container(
@@ -324,7 +338,7 @@ class _WeatherPageState extends State<WeatherPage> {
       context: context,
       initialDate: currentDate,
       currentDate: DateTime.now(),
-      firstDate: DateTime(2021, 9, 10),
+      firstDate: DateTime(2021, 9, 13),
       lastDate: DateTime.now().add(Duration(days: 1)),
       helpText: "Прогноз на ",
       builder: (BuildContext context, Widget? child) {
@@ -360,7 +374,7 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   plusClick() {
-    if (firebase.checkAdmin()) {
+    if (firebase.auth.currentUser != null) {
       if (weather["tempDay"] == "—") {
         changeModeIcon = "icon_clear_sky_day";
         textController.clear();
@@ -396,7 +410,7 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   pencilClick() {
-    if (firebase.checkAdmin()) {
+    if (firebase.auth.currentUser != null) {
       if (weather["tempDay"] == "—") {
         getSnackBar(
             "Невозможно редактировать.\nПогода на это число не найдена", true);
@@ -612,7 +626,7 @@ class _WeatherPageState extends State<WeatherPage> {
                       Expanded(child: Container()),
                       changeIconWeather(width, "icon_thunderstorm_night"),
                       Expanded(child: Container()),
-                      Container(width: width * 0.22),
+                      changeIconWeather(width, "icon_snow_night"),
                       Expanded(child: Container()),
                     ],
                   ),
@@ -655,7 +669,7 @@ class _WeatherPageState extends State<WeatherPage> {
     );
   }
 
-  getContent(double width, double height) {
+  getContent(double width, double height, BannerAd myBanner) {
     return Column(
       mainAxisSize: MainAxisSize.max,
       children: [
@@ -678,23 +692,31 @@ class _WeatherPageState extends State<WeatherPage> {
               "Тикси",
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 28,
+                fontSize: height * 0.04,
                 fontWeight: FontWeight.w700,
               ),
+              textAlign: TextAlign.center,
             ),
           ),
         ),
         Center(
           child: Container(
-            margin: EdgeInsets.only(top: height * 0.005),
+            margin: EdgeInsets.only(
+              top: height * 0.005,
+              left: 8.0,
+              right: 8.0,
+            ),
             child: changeMode
                 ? Container()
-                : Text(
-                    weather["text"],
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.6),
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
+                : Center(
+                    child: Text(
+                      weather["text"],
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.6),
+                        fontSize: height * 0.02,
+                        fontWeight: FontWeight.w500,
+                      ),
+                      textAlign: TextAlign.center,
                     ),
                   ),
           ),
@@ -716,9 +738,22 @@ class _WeatherPageState extends State<WeatherPage> {
               textController: textController,
               errorController: errorController,
               changeIcon: changeIcon,
+              myBanner: myBanner,
             ),
           ),
         ),
+        changeMode
+            ? Container()
+            : Container(
+                color: Colors.white,
+                child: Center(
+                  child: Container(
+                    height: myBanner.size.height.toDouble(),
+                    width: myBanner.size.width.toDouble(),
+                    child: AdWidget(ad: myBanner),
+                  ),
+                ),
+              ),
       ],
     );
   }
@@ -773,6 +808,7 @@ class CollapsingList extends StatelessWidget {
   final TextEditingController tempNightController;
   final TextEditingController errorController;
   final Function changeIcon;
+  final BannerAd myBanner;
 
   CollapsingList({
     required this.width,
@@ -789,6 +825,7 @@ class CollapsingList extends StatelessWidget {
     required this.tempNightController,
     required this.errorController,
     required this.changeIcon,
+    required this.myBanner,
   });
 
   SliverPersistentHeader makeHeader(String headerText) {
@@ -803,7 +840,7 @@ class CollapsingList extends StatelessWidget {
               headerText,
               style: TextStyle(
                 color: Colors.white,
-                fontSize: 72,
+                fontSize: height * 0.085,
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -816,7 +853,7 @@ class CollapsingList extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: EdgeInsets.symmetric(horizontal: width * 0.042),
+      margin: EdgeInsets.symmetric(horizontal: width * 0.04),
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(32),
       ),
@@ -870,14 +907,14 @@ class CollapsingList extends StatelessWidget {
                 ? SliverPersistentHeader(
                     pinned: true,
                     delegate: _SliverAppBarDelegate(
-                      minHeight: height * 0.07,
-                      maxHeight: height * 0.07,
+                      minHeight: height * 0.075,
+                      maxHeight: height * 0.075,
                       child: Container(
                         padding: EdgeInsets.symmetric(
                           vertical: 8.0,
                           horizontal: 8.0,
                         ),
-                        height: height * 0.07,
+                        height: height * 0.075,
                         width: width * 0.6,
                         decoration: BoxDecoration(
                           color: Colors.white,
@@ -989,7 +1026,10 @@ class CollapsingList extends StatelessWidget {
                   Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
-                      borderRadius: BorderRadius.circular(32.0),
+                      borderRadius: BorderRadius.only(
+                        topRight: Radius.circular(28.0),
+                        topLeft: Radius.circular(28.0),
+                      ),
                     ),
                     child: Column(
                       children: [
@@ -1004,10 +1044,11 @@ class CollapsingList extends StatelessWidget {
                         ),
                         Container(
                           margin: EdgeInsets.only(
-                              top: height * 0.01,
-                              left: width * 0.05,
-                              right: width * 0.05,
-                              bottom: height * 0.005),
+                            top: height * 0.01,
+                            left: width * 0.05,
+                            right: width * 0.05,
+                            bottom: height * 0.005,
+                          ),
                           child: Column(
                             children: [
                               changeMode
@@ -1043,14 +1084,17 @@ class CollapsingList extends StatelessWidget {
                                   : weather["warning"] != ""
                                       ? Container(
                                           margin: EdgeInsets.only(
-                                              top: height * 0.015),
+                                            top: height * 0.015,
+                                          ),
                                           padding: EdgeInsets.symmetric(
-                                              vertical: height * 0.015,
-                                              horizontal: width * 0.035),
+                                            vertical: height * 0.015,
+                                            horizontal: width * 0.035,
+                                          ),
                                           decoration: BoxDecoration(
-                                              color: Color(0xFFFFE2E2),
-                                              borderRadius:
-                                                  BorderRadius.circular(12.0)),
+                                            color: Color(0xFFFFE2E2),
+                                            borderRadius:
+                                                BorderRadius.circular(12.0),
+                                          ),
                                           child: Row(
                                             children: [
                                               SvgPicture.asset(
@@ -1058,12 +1102,13 @@ class CollapsingList extends StatelessWidget {
                                               Expanded(
                                                 child: Container(
                                                   margin: EdgeInsets.only(
-                                                      left: width * 0.04),
+                                                    left: width * 0.04,
+                                                  ),
                                                   child: Text(
                                                     weather["warning"],
                                                     style: TextStyle(
                                                       color: Color(0xFFE33F3F),
-                                                      fontSize: 14,
+                                                      fontSize: height * 0.0175,
                                                       fontWeight:
                                                           FontWeight.w500,
                                                     ),
@@ -1132,15 +1177,6 @@ class CollapsingList extends StatelessWidget {
                   ),
                 ],
               ),
-              //itemExtent: height * 0.6,
-            ),
-            SliverPersistentHeader(
-              pinned: false,
-              delegate: _SliverAppBarDelegate(
-                minHeight: 0,
-                maxHeight: height * 0.03,
-                child: Container(),
-              ),
             ),
           ],
         ),
@@ -1170,7 +1206,7 @@ class CollapsingList extends StatelessWidget {
               h1,
               style: TextStyle(
                 color: Color(0xFF868AA0),
-                fontSize: 16,
+                fontSize: height * 0.02,
                 fontWeight: FontWeight.w400,
               ),
             ),
@@ -1190,7 +1226,7 @@ class CollapsingList extends StatelessWidget {
                     text,
                     style: TextStyle(
                       color: Color(0xFF242424),
-                      fontSize: 16,
+                      fontSize: height * 0.02,
                       fontWeight: FontWeight.w700,
                     ),
                     textAlign: TextAlign.end,

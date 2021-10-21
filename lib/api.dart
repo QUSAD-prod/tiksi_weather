@@ -10,10 +10,7 @@ class Api {
 
   FirebaseAuth auth = FirebaseAuth.instance;
 
-  DatabaseReference db = FirebaseDatabase(
-    databaseURL:
-        "https://tiksiweather-default-rtdb.europe-west1.firebasedatabase.app/",
-  ).reference();
+  DatabaseReference db = FirebaseDatabase().reference();
 
   FirebaseMessaging messagingService = FirebaseMessaging.instance;
 
@@ -97,20 +94,6 @@ class Api {
       return "ok";
     } catch (e) {
       return "error";
-    }
-  }
-
-  bool checkAdmin() {
-    if (auth.currentUser != null) {
-      User currentUser = auth.currentUser!;
-      currentUser.reload();
-      if (currentUser.emailVerified == true) {
-        return true;
-      } else {
-        return false;
-      }
-    } else {
-      return false;
     }
   }
 
