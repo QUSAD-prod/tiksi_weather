@@ -39,7 +39,7 @@ class Api {
   pushNotification(bool newWeather) async {
     if (newWeather) {
       try {
-        var response = await http.post(
+        await http.post(
           Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -55,15 +55,12 @@ class Api {
             "direct_boot_ok": true
           }),
         );
-        print("RESPONSE STATUS: " + response.statusCode.toString());
-        print("RESPONSE REQUEST: " + response.request.toString());
-        print("RESPONSE HEADERS: " + response.headers.toString());
       } catch (e) {
         print(e);
       }
     } else {
       try {
-        var response = await http.post(
+        await http.post(
           Uri.parse('https://fcm.googleapis.com/fcm/send'),
           headers: <String, String>{
             'Content-Type': 'application/json; charset=UTF-8',
@@ -79,9 +76,6 @@ class Api {
             "direct_boot_ok": true
           }),
         );
-        print("RESPONSE STATUS: " + response.statusCode.toString());
-        print("RESPONSE REQUEST: " + response.request.toString());
-        print("RESPONSE HEADERS: " + response.headers.toString());
       } catch (e) {
         print(e);
       }

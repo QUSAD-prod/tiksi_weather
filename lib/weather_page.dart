@@ -1,6 +1,4 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:intl/intl.dart';
@@ -16,25 +14,20 @@ import 'components/input.dart';
 
 class WeatherPage extends StatefulWidget {
   final Api firebase;
-  WeatherPage({required this.firebase});
+  const WeatherPage({required this.firebase, Key? key}) : super(key: key);
   @override
-  _WeatherPageState createState() => _WeatherPageState(
-        firebase: firebase,
-      );
+  _WeatherPageState createState() => _WeatherPageState();
 }
 
 class _WeatherPageState extends State<WeatherPage> {
-  Api firebase;
-  _WeatherPageState({required this.firebase});
-
   bool errorEmail = false;
   bool errorPass = false;
 
   bool authPage = false;
   bool loading = true;
 
-  TextEditingController _loginController = TextEditingController();
-  TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _loginController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
   DateTime currentDate = DateTime.now();
 
@@ -67,8 +60,8 @@ class _WeatherPageState extends State<WeatherPage> {
   BannerAd myBanner = BannerAd(
     adUnitId: 'ca-app-pub-9786536863361967/1658844912',
     size: AdSize.banner,
-    request: AdRequest(),
-    listener: BannerAdListener(),
+    request: const AdRequest(),
+    listener: const BannerAdListener(),
   );
 
   @override
@@ -89,21 +82,19 @@ class _WeatherPageState extends State<WeatherPage> {
     }
     return Scaffold(
       resizeToAvoidBottomInset: false,
-      body: Container(
-        child: Stack(
-          children: [
-            Background(
-              height: mainHeight,
-            ),
-            getContent(width, height, myBanner),
-            authPage
-                ? getAuthPage(width, height)
-                : Container(width: 0, height: 0),
-            loading
-                ? getLoading(width, height)
-                : Container(width: 0, height: 0),
-          ],
-        ),
+      body: Stack(
+        children: [
+          Background(
+            height: mainHeight,
+          ),
+          getContent(width, height, myBanner),
+          authPage
+              ? getAuthPage(width, height)
+              : const SizedBox(width: 0, height: 0),
+          loading
+              ? getLoading(width, height)
+              : const SizedBox(width: 0, height: 0),
+        ],
       ),
     );
   }
@@ -113,7 +104,7 @@ class _WeatherPageState extends State<WeatherPage> {
       width: width,
       height: height,
       color: Colors.black.withOpacity(0.7),
-      child: Center(
+      child: const Center(
         child: CircularProgressIndicator(
           color: Color(0xFF3645AF),
         ),
@@ -123,13 +114,13 @@ class _WeatherPageState extends State<WeatherPage> {
 
   void functionSignIn() async {
     FocusManager.instance.primaryFocus?.unfocus();
-    if (this._loginController.text.trim() != "" &&
-        this._passwordController.text.trim() != "") {
+    if (_loginController.text.trim() != "" &&
+        _passwordController.text.trim() != "") {
       errorEmail = false;
       errorPass = false;
-      String result = await firebase.signIn(
-        this._loginController.text.trim(),
-        this._passwordController.text.trim(),
+      String result = await widget.firebase.signIn(
+        _loginController.text.trim(),
+        _passwordController.text.trim(),
       );
       String? message;
       bool isOk = false;
@@ -205,7 +196,7 @@ class _WeatherPageState extends State<WeatherPage> {
                   Text(
                     "Вход в аккаунт",
                     style: TextStyle(
-                      color: Color(0xFF242424),
+                      color: const Color(0xFF242424),
                       fontSize: height * 0.035,
                       fontWeight: FontWeight.w700,
                     ),
@@ -214,7 +205,7 @@ class _WeatherPageState extends State<WeatherPage> {
                   Text(
                     "(только для админов)",
                     style: TextStyle(
-                      color: Color(0xFF242424).withOpacity(0.6),
+                      color: const Color(0xFF242424).withOpacity(0.6),
                       fontSize: height * 0.02,
                       fontWeight: FontWeight.w400,
                     ),
@@ -318,9 +309,10 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   void checkEmailForPassReset() async {
-    FocusScope.of(context).requestFocus(new FocusNode());
+    FocusScope.of(context).requestFocus(FocusNode());
     if (_loginController.text.isNotEmpty) {
-      String result = await firebase.resetPassword(_loginController.text);
+      String result =
+          await widget.firebase.resetPassword(_loginController.text);
       if (result == "ok") {
         getSnackBar("Письмо для сброса пароля отправлено на почту", false);
         Navigator.pop(context);
@@ -339,7 +331,7 @@ class _WeatherPageState extends State<WeatherPage> {
       initialDate: currentDate,
       currentDate: DateTime.now(),
       firstDate: DateTime(2021, 9, 13),
-      lastDate: DateTime.now().add(Duration(days: 1)),
+      lastDate: DateTime.now().add(const Duration(days: 1)),
       helpText: "Прогноз на ",
       builder: (BuildContext context, Widget? child) {
         return Theme(
@@ -374,7 +366,7 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   plusClick() {
-    if (firebase.auth.currentUser != null) {
+    if (widget.firebase.auth.currentUser != null) {
       if (weather["tempDay"] == "—") {
         changeModeIcon = "icon_clear_sky_day";
         textController.clear();
@@ -410,7 +402,7 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   pencilClick() {
-    if (firebase.auth.currentUser != null) {
+    if (widget.firebase.auth.currentUser != null) {
       if (weather["tempDay"] == "—") {
         getSnackBar(
             "Невозможно редактировать.\nПогода на это число не найдена", true);
@@ -463,18 +455,15 @@ class _WeatherPageState extends State<WeatherPage> {
         "windImpulses": windImpulsesController.text,
         "windSpeed": windSpeedController.text,
       };
-      firebase.db
+      widget.firebase.db
           .child("weather")
           .child(DateFormat('dd-MM-yyyy').format(currentDate))
           .set(weatherForSave)
           .whenComplete(
             () => {
-              firebase.pushNotification(newWeather),
-              setState(() => {
-                    this.changeMode = false,
-                    this.newWeather = false,
-                    getWeather()
-                  })
+              widget.firebase.pushNotification(newWeather),
+              setState(
+                  () => {changeMode = false, newWeather = false, getWeather()})
             },
           );
     } else {
@@ -483,10 +472,9 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 
   getWeather() async {
-    Map weather = await firebase.getWeather(
+    Map weather = await widget.firebase.getWeather(
       DateFormat('dd-MM-yyyy').format(currentDate),
     );
-    print(weather["result"]);
     if (weather["result"] == "ok") {
       if (weather["tempDay"] != "" &&
           weather["text"] != "" &&
@@ -505,11 +493,11 @@ class _WeatherPageState extends State<WeatherPage> {
         }
         setState(() {
           this.weather = weather;
-          this.loading = false;
+          loading = false;
         });
       } else {
         setState(() {
-          this.loading = false;
+          loading = false;
         });
         if (!changeMode) {
           getSnackBar("Ошибка получения погоды на это число", true);
@@ -517,7 +505,7 @@ class _WeatherPageState extends State<WeatherPage> {
       }
     } else {
       setState(() {
-        this.loading = false;
+        loading = false;
       });
       if (!changeMode) {
         getSnackBar("Ошибка получения погоды на это число", true);
@@ -530,13 +518,14 @@ class _WeatherPageState extends State<WeatherPage> {
       behavior: SnackBarBehavior.floating,
       content: Text(
         text,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 15,
           fontWeight: FontWeight.w400,
           color: Colors.white,
         ),
       ),
-      backgroundColor: error ? Color(0xFFE64646) : Color(0xFF4BB34B),
+      backgroundColor:
+          error ? const Color(0xFFE64646) : const Color(0xFF4BB34B),
     );
     ScaffoldMessenger.of(context).clearSnackBars();
     ScaffoldMessenger.of(context).showSnackBar(snackBar);
@@ -549,95 +538,91 @@ class _WeatherPageState extends State<WeatherPage> {
         height: height * 0.007,
         width: width * 0.128,
         decoration: BoxDecoration(
-          color: Color(0xFFD9DBE9),
+          color: const Color(0xFFD9DBE9),
           borderRadius: BorderRadius.circular(8.0),
         ),
       ),
-      builder: (context) => Container(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            AppBar(
-              title: Text(
-                "Выберите иконку для погоды",
-                style: TextStyle(color: Colors.black, fontSize: 16),
-              ),
+      builder: (context) => Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          AppBar(
+            title: const Text(
+              "Выберите иконку для погоды",
+              style: TextStyle(color: Colors.black, fontSize: 16),
             ),
-            Container(
-              child: Column(
+          ),
+          Column(
+            children: [
+              Container(
+                height: 12.0,
+              ),
+              Row(
                 children: [
-                  Container(
-                    height: 12.0,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_broken_clouds_day"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_broken_clouds_night"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_clear_sky_day"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_clear_sky_night"),
-                      Expanded(child: Container()),
-                    ],
-                  ),
-                  Container(
-                    height: 12.0,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_few_clouds_day"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_few_clouds_night"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_mist_day"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_rain_day"),
-                      Expanded(child: Container()),
-                    ],
-                  ),
-                  Container(
-                    height: 12.0,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_rain_night"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_scattered_clouds_night"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_shower_rain_day"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_shower_rain_night"),
-                      Expanded(child: Container()),
-                    ],
-                  ),
-                  Container(
-                    height: 12.0,
-                  ),
-                  Row(
-                    children: [
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_snow_day"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_thunderstorm_day"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_thunderstorm_night"),
-                      Expanded(child: Container()),
-                      changeIconWeather(width, "icon_snow_night"),
-                      Expanded(child: Container()),
-                    ],
-                  ),
-                  Container(
-                    height: 24.0,
-                  ),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_broken_clouds_day"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_broken_clouds_night"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_clear_sky_day"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_clear_sky_night"),
+                  Expanded(child: Container()),
                 ],
               ),
-            ),
-          ],
-        ),
+              Container(
+                height: 12.0,
+              ),
+              Row(
+                children: [
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_few_clouds_day"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_few_clouds_night"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_mist_day"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_rain_day"),
+                  Expanded(child: Container()),
+                ],
+              ),
+              Container(
+                height: 12.0,
+              ),
+              Row(
+                children: [
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_rain_night"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_scattered_clouds_night"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_shower_rain_day"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_shower_rain_night"),
+                  Expanded(child: Container()),
+                ],
+              ),
+              Container(
+                height: 12.0,
+              ),
+              Row(
+                children: [
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_snow_day"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_thunderstorm_day"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_thunderstorm_night"),
+                  Expanded(child: Container()),
+                  changeIconWeather(width, "icon_snow_night"),
+                  Expanded(child: Container()),
+                ],
+              ),
+              Container(
+                height: 24.0,
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }
@@ -646,20 +631,20 @@ class _WeatherPageState extends State<WeatherPage> {
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(16.0),
-        color: Color(0xFF3f8ae0),
+        color: const Color(0xFF3f8ae0),
       ),
       child: Material(
         color: Colors.transparent,
         child: InkWell(
           onTap: () => setState(() {
-            this.changeModeIcon = name;
+            changeModeIcon = name;
             Navigator.pop(context);
           }),
           borderRadius: BorderRadius.circular(16.0),
           child: Container(
             height: width * 0.22,
             width: width * 0.22,
-            padding: EdgeInsets.all(12.0),
+            padding: const EdgeInsets.all(12.0),
             child: WeatherIcon(
               icon: name,
             ),
@@ -722,24 +707,22 @@ class _WeatherPageState extends State<WeatherPage> {
           ),
         ),
         Expanded(
-          child: Container(
-            child: CollapsingList(
-              width: width,
-              height: height,
-              iconName: weather["iconName"],
-              weather: weather,
-              changeMode: changeMode,
-              tempDayController: tempDayController,
-              tempNightController: tempNightController,
-              windDirectionController: windDirectionController,
-              windImpulsesController: windImpulsesController,
-              windSpeedController: windSpeedController,
-              changeModeIcon: changeModeIcon,
-              textController: textController,
-              errorController: errorController,
-              changeIcon: changeIcon,
-              myBanner: myBanner,
-            ),
+          child: CollapsingList(
+            width: width,
+            height: height,
+            iconName: weather["iconName"],
+            weather: weather,
+            changeMode: changeMode,
+            tempDayController: tempDayController,
+            tempNightController: tempNightController,
+            windDirectionController: windDirectionController,
+            windImpulsesController: windImpulsesController,
+            windSpeedController: windSpeedController,
+            changeModeIcon: changeModeIcon,
+            textController: textController,
+            errorController: errorController,
+            changeIcon: changeIcon,
+            myBanner: myBanner,
           ),
         ),
         changeMode
@@ -747,7 +730,7 @@ class _WeatherPageState extends State<WeatherPage> {
             : Container(
                 color: Colors.white,
                 child: Center(
-                  child: Container(
+                  child: SizedBox(
                     height: myBanner.size.height.toDouble(),
                     width: myBanner.size.width.toDouble(),
                     child: AdWidget(ad: myBanner),
@@ -782,7 +765,7 @@ class _SliverAppBarDelegate extends SliverPersistentHeaderDelegate {
     double shrinkOffset,
     bool overlapsContent,
   ) {
-    return new SizedBox.expand(child: child);
+    return SizedBox.expand(child: child);
   }
 
   @override
@@ -810,7 +793,7 @@ class CollapsingList extends StatelessWidget {
   final Function changeIcon;
   final BannerAd myBanner;
 
-  CollapsingList({
+  const CollapsingList({
     required this.width,
     required this.height,
     required this.iconName,
@@ -826,7 +809,8 @@ class CollapsingList extends StatelessWidget {
     required this.errorController,
     required this.changeIcon,
     required this.myBanner,
-  });
+    Key? key,
+  }) : super(key: key);
 
   SliverPersistentHeader makeHeader(String headerText) {
     return SliverPersistentHeader(
@@ -834,15 +818,13 @@ class CollapsingList extends StatelessWidget {
       delegate: _SliverAppBarDelegate(
         minHeight: height * 0.1,
         maxHeight: height * 0.1,
-        child: Container(
-          child: Center(
-            child: Text(
-              headerText,
-              style: TextStyle(
-                color: Colors.white,
-                fontSize: height * 0.085,
-                fontWeight: FontWeight.w700,
-              ),
+        child: Center(
+          child: Text(
+            headerText,
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: height * 0.085,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
@@ -893,12 +875,10 @@ class CollapsingList extends StatelessWidget {
                     delegate: _SliverAppBarDelegate(
                       minHeight: 0.0,
                       maxHeight: width * 0.25,
-                      child: Container(
-                        child: Center(
-                          child: WeatherIcon(
-                            icon: iconName,
-                            size: width * 0.25,
-                          ),
+                      child: Center(
+                        child: WeatherIcon(
+                          icon: iconName,
+                          size: width * 0.25,
                         ),
                       ),
                     ),
@@ -910,7 +890,7 @@ class CollapsingList extends StatelessWidget {
                       minHeight: height * 0.075,
                       maxHeight: height * 0.075,
                       child: Container(
-                        padding: EdgeInsets.symmetric(
+                        padding: const EdgeInsets.symmetric(
                           vertical: 8.0,
                           horizontal: 8.0,
                         ),
@@ -958,7 +938,7 @@ class CollapsingList extends StatelessWidget {
                             right: width * 0.298,
                           ),
                           decoration: BoxDecoration(
-                            color: Color(0xFF3f8ae0),
+                            color: const Color(0xFF3f8ae0),
                             borderRadius: BorderRadius.circular(16.0),
                             border: Border.all(color: Colors.white, width: 2.5),
                           ),
@@ -967,13 +947,13 @@ class CollapsingList extends StatelessWidget {
                             child: InkWell(
                               onTap: () => changeIcon(width, height),
                               borderRadius: BorderRadius.circular(16.0),
-                              child: Container(
+                              child: SizedBox(
                                 height: width * 0.32,
                                 width: width * 0.32,
                                 child: Stack(
                                   children: [
                                     Container(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: const EdgeInsets.all(8.0),
                                       decoration: BoxDecoration(
                                         borderRadius:
                                             BorderRadius.circular(16.0),
@@ -989,11 +969,12 @@ class CollapsingList extends StatelessWidget {
                                           children: [
                                             Expanded(child: Container()),
                                             Container(
-                                              margin: EdgeInsets.only(
+                                              margin: const EdgeInsets.only(
                                                 top: 8.0,
                                                 right: 8.0,
                                               ),
-                                              padding: EdgeInsets.all(8.0),
+                                              padding:
+                                                  const EdgeInsets.all(8.0),
                                               decoration: BoxDecoration(
                                                 borderRadius:
                                                     BorderRadius.circular(
@@ -1024,7 +1005,7 @@ class CollapsingList extends StatelessWidget {
                         )
                       : Container(),
                   Container(
-                    decoration: BoxDecoration(
+                    decoration: const BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.only(
                         topRight: Radius.circular(28.0),
@@ -1038,7 +1019,7 @@ class CollapsingList extends StatelessWidget {
                           height: height * 0.007,
                           width: width * 0.128,
                           decoration: BoxDecoration(
-                            color: Color(0xFFD9DBE9),
+                            color: const Color(0xFFD9DBE9),
                             borderRadius: BorderRadius.circular(8.0),
                           ),
                         ),
@@ -1059,7 +1040,7 @@ class CollapsingList extends StatelessWidget {
                                           vertical: height * 0.015,
                                           horizontal: width * 0.035),
                                       decoration: BoxDecoration(
-                                          color: Color(0xFFFFE2E2),
+                                          color: const Color(0xFFFFE2E2),
                                           borderRadius:
                                               BorderRadius.circular(12.0)),
                                       child: Row(
@@ -1091,7 +1072,7 @@ class CollapsingList extends StatelessWidget {
                                             horizontal: width * 0.035,
                                           ),
                                           decoration: BoxDecoration(
-                                            color: Color(0xFFFFE2E2),
+                                            color: const Color(0xFFFFE2E2),
                                             borderRadius:
                                                 BorderRadius.circular(12.0),
                                           ),
@@ -1107,7 +1088,8 @@ class CollapsingList extends StatelessWidget {
                                                   child: Text(
                                                     weather["warning"],
                                                     style: TextStyle(
-                                                      color: Color(0xFFE33F3F),
+                                                      color: const Color(
+                                                          0xFFE33F3F),
                                                       fontSize: height * 0.0175,
                                                       fontWeight:
                                                           FontWeight.w500,
@@ -1205,7 +1187,7 @@ class CollapsingList extends StatelessWidget {
             child: Text(
               h1,
               style: TextStyle(
-                color: Color(0xFF868AA0),
+                color: const Color(0xFF868AA0),
                 fontSize: height * 0.02,
                 fontWeight: FontWeight.w400,
               ),
@@ -1225,7 +1207,7 @@ class CollapsingList extends StatelessWidget {
                 : Text(
                     text,
                     style: TextStyle(
-                      color: Color(0xFF242424),
+                      color: const Color(0xFF242424),
                       fontSize: height * 0.02,
                       fontWeight: FontWeight.w700,
                     ),
@@ -1240,7 +1222,7 @@ class CollapsingList extends StatelessWidget {
   getSeporator() {
     return Container(
       height: 1,
-      color: Color(0xFFEAECF6),
+      color: const Color(0xFFEAECF6),
     );
   }
 }

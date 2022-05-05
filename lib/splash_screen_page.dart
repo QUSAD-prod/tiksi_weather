@@ -1,12 +1,12 @@
 import 'dart:async';
-
-import 'package:flutter/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:tiksi_weather/api.dart';
 import 'package:tiksi_weather/weather_page.dart';
 
 class SplashScreen extends StatefulWidget {
+  const SplashScreen({Key? key}) : super(key: key);
+
   @override
   _SplashScreenState createState() => _SplashScreenState();
 }
@@ -15,7 +15,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Timer(Duration(seconds: 3), () {
+    Timer(const Duration(seconds: 3), () {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -43,14 +43,14 @@ class _SplashScreenState extends State<SplashScreen> {
                 Container(
                   height: width * 0.3,
                   width: width * 0.3,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     image: DecorationImage(
-                      image: new ExactAssetImage('assets/splash.png'),
+                      image: ExactAssetImage('assets/splash.png'),
                     ),
                   ),
                 ),
                 Container(
-                  margin: EdgeInsets.only(top: 18.0),
+                  margin: const EdgeInsets.only(top: 18.0),
                   child: Text(
                     "TiksiWeather",
                     style: TextStyle(
@@ -60,14 +60,12 @@ class _SplashScreenState extends State<SplashScreen> {
                     ),
                   ),
                 ),
-                Container(
-                  child: Text(
-                    "Прогноз погоды в Тикси",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: height * 0.02,
-                      fontWeight: FontWeight.w500,
-                    ),
+                Text(
+                  "Прогноз погоды в Тикси",
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: height * 0.02,
+                    fontWeight: FontWeight.w500,
                   ),
                 ),
               ],
@@ -100,7 +98,7 @@ class _SplashScreenState extends State<SplashScreen> {
         Container(
           width: width,
           height: height,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             gradient: LinearGradient(
               begin: FractionalOffset.topCenter,
               end: FractionalOffset.bottomCenter,

@@ -19,10 +19,12 @@ void main() async {
   FirebaseMessaging.onBackgroundMessage(_messageHandler);
   FirebaseMessaging messaging = FirebaseMessaging.instance;
   await messaging.subscribeToTopic('weather');
-  runApp(MyApp());
+  runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+
   @override
   Widget build(BuildContext context) {
     SystemChrome.setPreferredOrientations(
@@ -35,16 +37,16 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       theme: ThemeData(
         fontFamily: 'Inter',
-        appBarTheme: AppBarTheme(
+        appBarTheme: const AppBarTheme(
             elevation: 0,
             iconTheme: IconThemeData(color: Color(0xFF3f8ae0)),
             backgroundColor: Colors.white),
       ),
-      localizationsDelegates: [GlobalMaterialLocalizations.delegate],
-      supportedLocales: [
-        const Locale('ru'),
+      localizationsDelegates: const [GlobalMaterialLocalizations.delegate],
+      supportedLocales: const [
+        Locale('ru'),
       ],
-      home: SplashScreen(),
+      home: const SplashScreen(),
     );
   }
 }

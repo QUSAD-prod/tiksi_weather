@@ -9,7 +9,8 @@ class DateWidget extends StatelessWidget {
   final Function rightIconClick;
   final bool changeMode;
 
-  DateWidget({
+  const DateWidget({
+    Key? key,
     required this.text,
     required this.height,
     required this.width,
@@ -17,14 +18,14 @@ class DateWidget extends StatelessWidget {
     required this.leftIconClick,
     required this.rightIconClick,
     required this.changeMode,
-  });
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(20),
-          color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        color: Colors.white,
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -42,7 +43,7 @@ class DateWidget extends StatelessWidget {
                 onTap: () => leftIconClick(),
                 borderRadius: BorderRadius.circular(24.0),
                 child: Container(
-                  padding: EdgeInsets.all(4.0),
+                  padding: const EdgeInsets.all(4.0),
                   child: Icon(
                     changeMode ? Icons.arrow_back : Icons.add_rounded,
                     size: 28,
@@ -53,7 +54,7 @@ class DateWidget extends StatelessWidget {
           ),
           Container(
             decoration: BoxDecoration(
-              color: Color(0xFF4474CE),
+              color: const Color(0xFF4474CE),
               borderRadius: BorderRadius.circular(20),
             ),
             child: Material(
@@ -91,7 +92,7 @@ class DateWidget extends StatelessWidget {
                 onTap: () => rightIconClick(),
                 borderRadius: BorderRadius.circular(24.0),
                 child: Container(
-                  padding: EdgeInsets.all(5.0),
+                  padding: const EdgeInsets.all(5.0),
                   child: Icon(
                     changeMode ? Icons.save_outlined : Icons.create_outlined,
                     size: 24,

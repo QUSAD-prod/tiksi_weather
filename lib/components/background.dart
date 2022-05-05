@@ -3,12 +3,12 @@ import 'package:flutter_svg/flutter_svg.dart';
 
 class Background extends StatelessWidget {
   final double height;
-  Background({required this.height});
+  const Background({Key? key, required this.height}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     double width = MediaQuery.of(context).size.width;
-    return Container(
+    return SizedBox(
       height: height,
       width: width,
       child: Stack(
@@ -18,7 +18,7 @@ class Background extends StatelessWidget {
             children: [
               Container(
                 height: height * 0.66,
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   gradient: LinearGradient(
                     begin: FractionalOffset.topCenter,
                     end: FractionalOffset.bottomCenter,
@@ -31,6 +31,7 @@ class Background extends StatelessWidget {
               ),
               Expanded(
                   child: Container(
+                // ignore: prefer_const_constructors
                 color: Color(0xFF3645AF),
               )),
             ],
